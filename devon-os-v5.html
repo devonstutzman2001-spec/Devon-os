@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devon OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { height:100%; }
+
+/* ── THEME VARIABLES ── */
+:root {
+  --bg:       #0e0f11;
+  --bg2:      #141518;
+  --bg3:      #1a1c20;
+  --border:   #2a2d35;
+  --border2:  #363a45;
+  --accent:   #e8f0fe;
+  --accent2:  #7c9ef8;
+  --accent3:  #4ade80;
+  --gold:     #f0c060;
+  --dim:      #52566a;
+  --text:     #d8dce8;
+  --text2:    #9298b0;
+  --red:      #f87171;
+  --green:    #4ade80;
+  --cat-health:        #4ade80;
+  --cat-finance:       #f0c060;
+  --cat-career:        #7c9ef8;
+  --cat-intellectual:  #c084fc;
+  --cat-relationships: #f472b6;
+  --cat-hobbies:       #fb923c;
+  --cat-spiritual:     #67e8f9;
+  --cat-physical:      #a3e635;
+}
+
+/* ── BODY ── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT: SIDEBAR ── */
+body.layout-sidebar .shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+body.layout-sidebar .sidenav {
+  display: flex; flex-direction: column;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; padding: 24px 0;
+}
+body.layout-sidebar .bottomnav { display: none; }
+body.layout-sidebar .main { overflow-y: auto; }
+
+/* ── LAYOUT: BOTTOM BAR ── */
+body.layout-bottom .shell {
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+body.layout-bottom .sidenav { display: none; }
+body.layout-bottom .bottomnav {
+  display: flex;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+}
+body.layout-bottom .main {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 72px;
+}
+
+/* ── SIDENAV ── */
+.sidenav-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.logo-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+.logo-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  margin-top: 2px;
+}
+.nav-group { padding: 0 12px; margin-bottom: 4px; }
+.nav-group-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--dim);
+  padding: 0 8px;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+.nav-btn {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 9px 10px;
+  background: none; border: none; border-radius: 6px;
+  color: var(--text2); font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; text-align: left;
+  transition: background 0.15s, color 0.15s;
+  margin-bottom: 1px;
+}
+.nav-btn:hover { background: var(--bg3); color: var(--text); }
+.nav-btn.active { background: var(--bg3); color: var(--accent); }
+.nav-btn .ni { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+
+/* XP card in sidebar */
+.nav-xp-card {
+  margin: 16px 12px 0;
+  padding: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-top: auto;
+}
+.nxp-level {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--dim); margin-bottom: 2px;
+}
+.nxp-rank {
+  font-size: 16px; font-weight: 700;
+  color: var(--gold); margin-bottom: 8px;
+  line-height: 1.2;
+}
+.xp-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+.xp-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 0.5s ease; }
+.nxp-nums {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; color: var(--dim);
+  display: flex; justify-content: space-between;
+}
+
+/* ── BOTTOM NAV ── */
+.bot-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; padding: 10px 4px;
+  background: none; border: none;
+  color: var(--dim); font-family: 'Syne', sans-serif;
+  font-size: 9px; font-weight: 600; letter-spacing: 1px;
+  cursor: pointer; transition: color 0.15s;
+}
+.bot-btn:hover, .bot-btn.active { color: var(--accent2); }
+.bot-btn .bi { font-size: 18px; }
+
+/* ── MAIN CONTENT ── */
+.main { background: var(--bg); }
+.page { display: none; padding: 24px; max-width: 800px; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.ph {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.ph-title {
+  font-size: 32px; font-weight: 800;
+  letter-spacing: 2px; color: var(--accent);
+  line-height: 1;
+}
+.ph-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--dim); margin-top: 6px;
+}
+
+/* ── SECTION LABEL ── */
+.sl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--accent2); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 24px; }
+.stat-box {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 12px; text-align: center;
+}
+.stat-val {
+  font-size: 32px; font-weight: 800;
+  color: var(--gold); line-height: 1; margin-bottom: 4px;
+}
+.stat-lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; letter-spacing: 2px; color: var(--dim);
+}
+
+/* ── PROGRESS BAR ── */
+.prog-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent3)); transition: width 0.5s ease; }
+
+/* ── INPUTS ── */
+input[type=text], input[type=number], select, textarea {
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text); padding: 9px 12px;
+  font-family: 'Syne', sans-serif; font-size: 13px;
+  border-radius: 6px; outline: none; width: 100%;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent2); }
+input::placeholder, textarea::placeholder { color: var(--dim); }
+select { cursor: pointer; }
+select option { background: var(--bg3); }
+input[type=color] {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 6px; cursor: pointer; padding: 2px;
+  height: 34px; width: 48px;
+}
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px;
+  background: var(--border2); border-radius: 2px;
+  outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  background: var(--accent2); border-radius: 50%;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  background: none; border: 1px solid var(--border2);
+  color: var(--text2); padding: 8px 16px;
+  font-family: 'Syne', sans-serif; font-size: 12px;
+  font-weight: 600; letter-spacing: 1px;
+  border-radius: 6px; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn:hover { border-color: var(--accent2); color: var(--accent); }
+.btn-primary { border-color: var(--accent2); color: var(--accent2); }
+.btn-primary:hover { background: rgba(124,158,248,0.1); color: var(--accent); }
+.btn-danger { border-color: #3a1f1f; color: #7a4040; }
+.btn-danger:hover { border-color: var(--red); color: var(--red); }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-icon { padding: 5px 8px; font-size: 14px; }
+
+/* ── TASK ITEMS ── */
+.task-list { list-style: none; }
+.task-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.task-item:last-child { border-bottom: none; }
+.task-item:hover { background: rgba(255,255,255,0.02); }
+.task-cb {
+  width: 17px; height: 17px;
+  border: 1px solid var(--border2); border-radius: 3px;
+  flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.task-cb.done { background: var(--green); border-color: var(--green); }
+.task-cb.done::after { content: '✓'; font-size: 10px; color: #000; font-weight: 700; }
+.task-name { flex: 1; font-size: 14px; font-weight: 500; }
+.task-name.done { color: var(--dim); text-decoration: line-through; }
+.cat-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; letter-spacing: 1px;
+  padding: 2px 7px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.task-stars { font-size: 11px; flex-shrink: 0; }
+.task-xp {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; color: var(--gold);
+  flex-shrink: 0; min-width: 44px; text-align: right;
+}
+.task-del {
+  color: var(--dim); font-size: 12px; cursor: pointer;
+  opacity: 0; transition: opacity 0.15s; padding: 2px 4px;
+  flex-shrink: 0;
+}
+.task-item:hover .task-del { opacity: 1; }
+
+/* Star selector */
+.star-sel { display: flex; gap: 2px; }
+.star-sel button {
+  background: none; border: none; font-size: 16px;
+  cursor: pointer; color: var(--border2); transition: color 0.12s;
+  padding: 2px; line-height: 1;
+}
+.star-sel button.on { color: var(--gold); }
+
+/* ── DOMAIN BARS ── */
+.domain-list { display: flex; flex-direction: column; gap: 12px; }
+.domain-row {
+  display: flex; align-items: center; gap: 12px;
+}
+.domain-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 1px;
+  color: var(--text2); width: 110px; flex-shrink: 0;
+}
+.domain-track {
+  flex: 1; height: 6px; background: var(--border);
+  border-radius: 3px; overflow: hidden;
+}
+.domain-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.domain-score {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; color: var(--dim);
+  width: 28px; text-align: right; flex-shrink: 0;
+}
+.domain-edit-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--dim); padding: 2px 8px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 8px;
+  letter-spacing: 1px; border-radius: 4px; cursor: pointer;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.domain-edit-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ── TRAITS ── */
+.trait-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.trait-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  padding: 5px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 500;
+}
+.trait-del { font-size: 11px; color: var(--dim); cursor: pointer; transition: color 0.12s; }
+.trait-del:hover { color: var(--red); }
+
+/* ── MILESTONE / STREAK ITEMS ── */
+.ms-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.ms-item:last-child { border-bottom: none; }
+.ms-item:hover { background: rgba(255,255,255,0.02); }
+.ms-icon { font-size: 20px; flex-shrink: 0; }
+.ms-info { flex: 1; }
+.ms-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.ms-title.done { color: var(--dim); text-decoration: line-through; }
+.ms-desc { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--dim); }
+.ms-xp { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gold); flex-shrink: 0; }
+.ms-check {
+  width: 22px; height: 22px; border: 1px solid var(--border2);
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; flex-shrink: 0;
+  font-size: 11px; transition: all 0.15s;
+}
+.ms-check.done { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 700; }
+.ms-del { color: var(--dim); font-size: 12px; cursor: pointer; opacity: 0; transition: opacity 0.15s; padding: 2px 4px; }
+.ms-item:hover .ms-del { opacity: 1; }
+
+/* ── STREAK CARDS ── */
+.streak-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.streak-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 12px; text-align: center;
+  cursor: pointer; transition: border-color 0.15s; position: relative;
+  user-select: none;
+}
+.streak-card:hover { border-color: var(--border2); }
+.streak-card:active { transform: scale(0.97); }
+.sk-icon { font-size: 22px; margin-bottom: 4px; }
+.sk-count {
+  font-size: 36px; font-weight: 800;
+  line-height: 1; margin-bottom: 2px;
+}
+.sk-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; color: var(--dim);
+}
+.sk-del {
+  position: absolute; top: 6px; right: 8px;
+  font-size: 11px; color: var(--dim); cursor: pointer;
+  opacity: 0; transition: opacity 0.15s;
+}
+.streak-card:hover .sk-del { opacity: 1; }
+
+/* ── SHOP GRID ── */
+.shop-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.shop-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 12px; text-align: center;
+  position: relative; transition: border-color 0.15s;
+}
+.shop-card.can-buy { cursor: pointer; }
+.shop-card.can-buy:hover { border-color: var(--gold); }
+.shop-card.owned { border-color: rgba(74,222,128,0.3); }
+.shop-card.locked { opacity: 0.45; }
+.shop-emoji { font-size: 26px; margin-bottom: 8px; }
+.shop-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+.shop-cost { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--gold); }
+.shop-status { font-family: 'IBM Plex Mono', monospace; font-size: 9px; margin-top: 5px; letter-spacing: 1px; }
+.shop-del { position: absolute; top: 6px; right: 8px; font-size: 11px; color: var(--dim); opacity: 0; cursor: pointer; transition: opacity 0.15s; }
+.shop-card:hover .shop-del { opacity: 1; }
+
+/* ── JOURNAL ── */
+.journal-entry {
+  padding: 14px;
+  border-left: 2px solid var(--border2);
+  margin-bottom: 10px;
+  background: var(--bg2);
+  border-radius: 0 6px 6px 0;
+}
+.je-meta { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--dim); margin-bottom: 5px; display: flex; justify-content: space-between; }
+.je-text { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.je-del { color: var(--dim); cursor: pointer; }
+.je-del:hover { color: var(--red); }
+
+/* ── SETTINGS ── */
+.set-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 13px 0; border-bottom: 1px solid var(--border);
+}
+.set-row:last-child { border-bottom: none; }
+.set-info { flex: 1; }
+.set-label { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.set-sub { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--dim); }
+.set-ctrl { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.set-val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--gold); min-width: 36px; text-align: right; }
+.color-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.color-row:last-child { border-bottom: none; }
+.color-info { flex: 1; }
+.color-label { font-size: 13px; font-weight: 600; }
+.color-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--dim); margin-top: 1px; }
+.color-swatch { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border2); flex-shrink: 0; }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.preset-btn {
+  background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--text2); padding: 6px 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: 1px; border-radius: 6px; cursor: pointer;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.settings-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.curve-preview { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-top: 12px; }
+.cp-item { background: var(--bg3); border-radius: 4px; padding: 6px; text-align: center; }
+.cp-lvl { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--accent2); }
+.cp-xp { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text2); }
+.layout-toggle { display: flex; gap: 8px; }
+.layout-opt {
+  flex: 1; padding: 10px; text-align: center;
+  border: 1px solid var(--border2); border-radius: 6px;
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: 1px; color: var(--text2);
+}
+.layout-opt.active { border-color: var(--accent2); color: var(--accent2); background: rgba(124,158,248,0.06); }
+.layout-icon { font-size: 22px; margin-bottom: 4px; }
+
+/* ── MODALS ── */
+.modal-bg {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 28px; width: 420px;
+  max-width: 94vw; max-height: 90vh; overflow-y: auto;
+}
+.modal-title { font-size: 20px; font-weight: 800; letter-spacing: 1px; margin-bottom: 20px; }
+.modal-row { margin-bottom: 12px; }
+.modal-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--dim); margin-bottom: 5px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+/* ── LEVELUP OVERLAY ── */
+.levelup-bg {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.88);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.levelup-bg.open { opacity: 1; pointer-events: all; }
+.levelup-box {
+  text-align: center; padding: 48px 60px;
+  background: var(--bg2); border: 1px solid var(--gold);
+  border-radius: 12px; box-shadow: 0 0 60px rgba(240,192,96,0.12);
+  animation: pop 0.35s ease;
+}
+@keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.lu-eye { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 5px; color: var(--dim); margin-bottom: 10px; }
+.lu-num { font-size: 72px; font-weight: 800; color: var(--gold); line-height: 1; }
+.lu-rank { font-size: 22px; font-weight: 600; color: var(--text2); margin: 8px 0 24px; }
+.lu-close { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--dim); cursor: pointer; }
+
+/* ── TOAST ── */
+.toast-wrap {
+  position: fixed; bottom: 80px; right: 20px;
+  z-index: 999; display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+body.layout-sidebar .toast-wrap { bottom: 24px; }
+.toast {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-left: 2px solid var(--accent2);
+  padding: 10px 14px; border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--text2); max-width: 260px;
+  transform: translateX(20px); opacity: 0;
+  transition: all 0.22s ease;
+}
+.toast.in { transform: translateX(0); opacity: 1; }
+.toast-ttl { color: var(--text); font-weight: 500; margin-bottom: 1px; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 40px 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; letter-spacing: 2px; color: var(--dim);
+}
+
+/* ── CATEGORY COLORS UTIL ── */
+.pill-health        { background: rgba(74,222,128,0.1);  color: var(--cat-health);        border: 1px solid rgba(74,222,128,0.2); }
+.pill-finance       { background: rgba(240,192,96,0.1);  color: var(--cat-finance);       border: 1px solid rgba(240,192,96,0.2); }
+.pill-career        { background: rgba(124,158,248,0.1); color: var(--cat-career);        border: 1px solid rgba(124,158,248,0.2); }
+.pill-intellectual  { background: rgba(192,132,252,0.1); color: var(--cat-intellectual);  border: 1px solid rgba(192,132,252,0.2); }
+.pill-relationships { background: rgba(244,114,182,0.1); color: var(--cat-relationships); border: 1px solid rgba(244,114,182,0.2); }
+.pill-hobbies       { background: rgba(251,146,60,0.1);  color: var(--cat-hobbies);       border: 1px solid rgba(251,146,60,0.2); }
+.pill-spiritual     { background: rgba(103,232,249,0.1); color: var(--cat-spiritual);     border: 1px solid rgba(103,232,249,0.2); }
+.pill-physical      { background: rgba(163,230,53,0.1);  color: var(--cat-physical);      border: 1px solid rgba(163,230,53,0.2); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .shop-grid { grid-template-columns: repeat(2,1fr); }
+  .streak-grid { grid-template-columns: repeat(2,1fr); }
+  .settings-cols { grid-template-columns: 1fr; }
+  .page { padding: 16px; }
+  .levelup-box { padding: 36px 28px; }
+}
+</style>
+</head>
+<body class="layout-bottom">
+<div class="shell">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidenav" id="sidenav">
+    <div class="sidenav-logo">
+      <div class="logo-title">DEVON OS</div>
+      <div class="logo-sub">LIFE SYSTEM</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">MAIN</div>
+      <button class="nav-btn active" data-page="dashboard" onclick="nav('dashboard')"><span class="ni">◈</span>Dashboard</button>
+      <button class="nav-btn" data-page="tasks" onclick="nav('tasks')"><span class="ni">◻</span>Tasks</button>
+      <button class="nav-btn" data-page="character" onclick="nav('character')"><span class="ni">◆</span>Character</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">TRACK</div>
+      <button class="nav-btn" data-page="milestones" onclick="nav('milestones')"><span class="ni">▲</span>Milestones</button>
+      <button class="nav-btn" data-page="streaks" onclick="nav('streaks')"><span class="ni">⬡</span>Streaks</button>
+      <button class="nav-btn" data-page="shop" onclick="nav('shop')"><span class="ni">◇</span>Rewards</button>
+      <button class="nav-btn" data-page="journal" onclick="nav('journal')"><span class="ni">◈</span>Journal</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">CONFIG</div>
+      <button class="nav-btn" data-page="settings" onclick="nav('settings')"><span class="ni">⚙</span>Settings</button>
+    </div>
+    <div class="nav-xp-card">
+      <div class="nxp-level" id="sn-lvl">LEVEL 1</div>
+      <div class="nxp-rank" id="sn-rank">Initiate</div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="sn-bar" style="width:0%"></div></div>
+      <div class="nxp-nums"><span id="sn-cur">0 XP</span><span id="sn-nxt">— to next</span></div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainarea">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="ph">
+        <div class="ph-title">DASHBOARD</div>
+        <div class="ph-sub" id="dash-date">—</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-val" id="ds-level">1</div><div class="stat-lbl">LEVEL</div></div>
+        <div class="stat-box"><div class="stat-val" id="ds-tokens">0</div><div class="stat-lbl">TOKENS</div></div>
+        <div class="stat-box"><div class="stat-val" id="ds-done">0</div><div class="stat-lbl">DONE TODAY</div></div>
+        <div class="stat-box"><div class="stat-val" id="ds-streak">0</div><div class="stat-lbl">TOP STREAK</div></div>
+      </div>
+      <div class="sl">TODAY</div>
+      <div class="card" style="margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+          <span style="font-size:20px;font-weight:700" id="ds-pct">0%</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim)" id="ds-taskcount">0 / 0 tasks</span>
+        </div>
+        <div class="prog-wrap" style="height:8px"><div class="prog-fill" id="ds-prog" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)">XP to next level: <span style="color:var(--gold)" id="ds-xp-left">—</span></span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)" id="ds-xp-pct">—</span>
+        </div>
+      </div>
+      <div class="sl">LIFE DOMAINS</div>
+      <div class="card"><div class="domain-list" id="dash-domains"><div class="empty-state">No domains yet — add them in Character</div></div></div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="ph">
+        <div class="ph-title">TASKS</div>
+        <div class="ph-sub">ADD · COMPLETE · EARN XP</div>
+      </div>
+      <div class="card">
+        <div class="sl">NEW TASK</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input type="text" id="t-name" placeholder="What needs to get done?" />
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center">
+            <select id="t-cat">
+              <option value="health">Health</option>
+              <option value="finance">Finance</option>
+              <option value="career">Career</option>
+              <option value="intellectual">Intellectual</option>
+              <option value="relationships">Relationships</option>
+              <option value="hobbies">Hobbies</option>
+              <option value="spiritual">Spiritual</option>
+              <option value="physical">Physical</option>
+            </select>
+            <div class="star-sel" id="star-sel">
+              <button data-s="1" onclick="setStar(1)">★</button>
+              <button data-s="2" onclick="setStar(2)">★</button>
+              <button data-s="3" onclick="setStar(3)">★</button>
+            </div>
+            <button class="btn btn-primary" onclick="addTask()">+ ADD</button>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim)" id="star-hint">★ = 10 XP · ★★ = 25 XP · ★★★ = 50 XP</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="sl" style="margin:0">ACTIVE</div>
+          <button class="btn btn-sm" onclick="resetDay()">RESET DAY</button>
+        </div>
+        <ul class="task-list" id="task-list"><li><div class="empty-state">No tasks yet</div></li></ul>
+      </div>
+    </div>
+
+    <!-- CHARACTER -->
+    <div class="page" id="page-character">
+      <div class="ph">
+        <div class="ph-title">CHARACTER</div>
+        <div class="ph-sub">YOUR STATS</div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:3px">RANK</div>
+            <div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1" id="ch-rank">Initiate</div>
+          </div>
+          <div style="flex:1;min-width:160px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)">XP Progress</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold)" id="ch-xp-lbl">0 / 200</span>
+            </div>
+            <div class="prog-wrap"><div class="prog-fill" id="ch-xp-bar" style="width:0%"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:5px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)">Total XP: <span style="color:var(--text2)" id="ch-total">0</span></span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)">Tokens: <span style="color:var(--gold)" id="ch-tokens">0</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sl">LIFE DOMAINS</div>
+      <div class="card" id="ch-domains-card">
+        <div class="domain-list" id="ch-domains"></div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="openModal('domain-add-modal')">+ ADD DOMAIN</button>
+        </div>
+      </div>
+
+      <div class="sl">CHARACTER TRAITS</div>
+      <div class="card">
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" id="trait-input" placeholder="Add a trait you've earned..." style="flex:1" />
+          <button class="btn btn-primary" onclick="addTrait()">+ ADD</button>
+        </div>
+        <div class="trait-list" id="trait-list"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)">No traits yet — earn them</div></div>
+      </div>
+    </div>
+
+    <!-- MILESTONES -->
+    <div class="page" id="page-milestones">
+      <div class="ph">
+        <div class="ph-title">MILESTONES</div>
+        <div class="ph-sub">GOALS & ONE-TIME ACHIEVEMENTS</div>
+      </div>
+      <div class="card">
+        <div class="sl">ADD MILESTONE</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px">
+            <input type="text" id="ms-icon" placeholder="🎯" style="width:48px;text-align:center" />
+            <input type="text" id="ms-title" placeholder="Milestone title..." />
+          </div>
+          <input type="text" id="ms-desc" placeholder="Description or condition..." />
+          <div style="display:flex;gap:8px">
+            <input type="number" id="ms-xp" placeholder="XP reward" value="100" style="flex:1" />
+            <button class="btn btn-primary" onclick="addMilestone()">+ ADD</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sl">ALL MILESTONES</div>
+        <div id="ms-list"><div class="empty-state">No milestones yet</div></div>
+      </div>
+    </div>
+
+    <!-- STREAKS -->
+    <div class="page" id="page-streaks">
+      <div class="ph">
+        <div class="ph-title">STREAKS</div>
+        <div class="ph-sub">TAP TO INCREMENT · HOLD TO RESET</div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="sl">ADD STREAK</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="sk-icon" placeholder="🔥" style="width:48px;text-align:center" />
+          <input type="text" id="sk-name" placeholder="Streak name..." style="flex:1" />
+          <button class="btn btn-primary" onclick="addStreak()">+ ADD</button>
+        </div>
+      </div>
+      <div class="streak-grid" id="streak-grid"></div>
+      <div id="streak-empty" class="empty-state" style="display:none">No streaks yet</div>
+    </div>
+
+    <!-- SHOP -->
+    <div class="page" id="page-shop">
+      <div class="ph">
+        <div class="ph-title">REWARDS</div>
+        <div class="ph-sub" id="shop-sub">0 TOKENS AVAILABLE</div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="sl">ADD REWARD</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px">
+            <input type="text" id="sh-emoji" placeholder="🍩" style="width:48px;text-align:center" />
+            <input type="text" id="sh-name" placeholder="Reward name..." />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px">
+            <input type="number" id="sh-cost" placeholder="Token cost" value="20" />
+            <input type="number" id="sh-lvl" placeholder="Min level" value="1" />
+            <button class="btn btn-primary" onclick="addShopItem()">+ ADD</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-grid" id="shop-grid"></div>
+      <div id="shop-empty" class="empty-state" style="display:none">No rewards yet</div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="page" id="page-journal">
+      <div class="ph">
+        <div class="ph-title">JOURNAL</div>
+        <div class="ph-sub" id="journal-sub">DAILY LOG · +10 XP PER ENTRY</div>
+      </div>
+      <div class="card">
+        <textarea id="j-input" rows="4" placeholder="Log wins, blockers, trade notes, anything..."></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-primary" onclick="addJournal()">COMMIT</button>
+        </div>
+      </div>
+      <div id="journal-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="ph">
+        <div class="ph-title">SETTINGS</div>
+        <div class="ph-sub">SYSTEM CONFIG — CHANGES SAVE INSTANTLY</div>
+      </div>
+
+      <!-- Layout -->
+      <div class="sl">LAYOUT</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="layout-toggle">
+          <div class="layout-opt active" id="lo-bottom" onclick="setLayout('bottom')">
+            <div class="layout-icon">⬛</div>
+            <div>BOTTOM BAR</div>
+          </div>
+          <div class="layout-opt" id="lo-sidebar" onclick="setLayout('sidebar')">
+            <div class="layout-icon">◧</div>
+            <div>SIDEBAR</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- XP System -->
+      <div class="sl">XP SYSTEM</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">1-Star XP</div><div class="set-sub">Low priority tasks</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="xp1-r" min="5" max="100" step="5" style="width:100px" oninput="setSetting('xp1',+this.value)">
+            <span class="set-val" id="xp1-v">10</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">2-Star XP</div><div class="set-sub">Medium priority tasks</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="xp2-r" min="10" max="200" step="5" style="width:100px" oninput="setSetting('xp2',+this.value)">
+            <span class="set-val" id="xp2-v">25</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">3-Star XP</div><div class="set-sub">High priority tasks</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="xp3-r" min="20" max="400" step="10" style="width:100px" oninput="setSetting('xp3',+this.value)">
+            <span class="set-val" id="xp3-v">50</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">Journal XP</div><div class="set-sub">Per log entry</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="jxp-r" min="0" max="100" step="5" style="width:100px" oninput="setSetting('journalXP',+this.value)">
+            <span class="set-val" id="jxp-v">10</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">Perfect Day Bonus</div><div class="set-sub">XP for completing all tasks</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="pday-r" min="0" max="500" step="25" style="width:100px" oninput="setSetting('perfectBonus',+this.value)">
+            <span class="set-val" id="pday-v">100</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">Token Rate</div><div class="set-sub">1 token per N XP earned</div></div>
+          <div class="set-ctrl">
+            <input type="range" id="tok-r" min="1" max="20" step="1" style="width:100px" oninput="setSetting('tokenRate',+this.value)">
+            <span class="set-val" id="tok-v">1:5</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Curve -->
+      <div class="sl">LEVEL CURVE</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">Base XP (Level 2)</div>
+            <div class="set-sub">Cost of first level up</div>
+          </div>
+          <div class="set-ctrl">
+            <input type="range" id="base-r" min="50" max="1000" step="50" style="width:100px" oninput="setSetting('baseXP',+this.value)">
+            <span class="set-val" id="base-v">300</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">Curve Steepness</div>
+            <div class="set-sub">How fast cost grows (1.0 = flat, 1.5 = steep)</div>
+          </div>
+          <div class="set-ctrl">
+            <input type="range" id="curve-r" min="1.0" max="2.0" step="0.05" style="width:100px" oninput="setSetting('curve',+this.value)">
+            <span class="set-val" id="curve-v">1.2×</span>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-info">
+            <div class="set-label">Cap at Level</div>
+            <div class="set-sub">XP cost stays flat after this level</div>
+          </div>
+          <div class="set-ctrl">
+            <input type="range" id="cap-r" min="10" max="500" step="10" style="width:100px" oninput="setSetting('capLevel',+this.value)">
+            <span class="set-val" id="cap-v">100</span>
+          </div>
+        </div>
+        <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:6px">LEVEL COST PREVIEW</div>
+        <div class="curve-preview" id="curve-preview"></div>
+      </div>
+
+      <!-- Aesthetics -->
+      <div class="sl">THEME PRESETS</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="preset-row" id="preset-row"></div>
+      </div>
+
+      <div class="sl">CUSTOM COLORS</div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="settings-cols" id="color-pickers"></div>
+      </div>
+
+      <!-- Data -->
+      <div class="sl">DATA</div>
+      <div class="card">
+        <div class="set-row">
+          <div class="set-info"><div class="set-label">Export Backup</div><div class="set-sub">Download your data as JSON</div></div>
+          <button class="btn btn-sm" onclick="exportData()">EXPORT</button>
+        </div>
+        <div class="set-row">
+          <div class="set-info"><div class="set-label" style="color:var(--red)">Reset All Data</div><div class="set-sub">Wipe everything. Cannot be undone.</div></div>
+          <button class="btn btn-danger btn-sm" onclick="resetAll()">RESET</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottomnav" id="bottomnav">
+    <button class="bot-btn active" data-page="dashboard" onclick="nav('dashboard')"><span class="bi">◈</span>HOME</button>
+    <button class="bot-btn" data-page="tasks" onclick="nav('tasks')"><span class="bi">◻</span>TASKS</button>
+    <button class="bot-btn" data-page="character" onclick="nav('character')"><span class="bi">◆</span>CHAR</button>
+    <button class="bot-btn" data-page="milestones" onclick="nav('milestones')"><span class="bi">▲</span>GOALS</button>
+    <button class="bot-btn" data-page="streaks" onclick="nav('streaks')"><span class="bi">⬡</span>STREAKS</button>
+    <button class="bot-btn" data-page="shop" onclick="nav('shop')"><span class="bi">◇</span>SHOP</button>
+    <button class="bot-btn" data-page="journal" onclick="nav('journal')"><span class="bi">◈</span>LOG</button>
+    <button class="bot-btn" data-page="settings" onclick="nav('settings')"><span class="bi">⚙</span>SET</button>
+  </nav>
+
+</div><!-- end .shell -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="domain-add-modal">
+  <div class="modal-box">
+    <div class="modal-title">ADD DOMAIN</div>
+    <div class="modal-row"><div class="modal-lbl">NAME</div><input type="text" id="da-name" placeholder="e.g. TRADING" /></div>
+    <div class="modal-row"><div class="modal-lbl">RATING (0–100)</div><input type="number" id="da-val" value="40" min="0" max="100" /></div>
+    <div class="modal-row">
+      <div class="modal-lbl">COLOR</div>
+      <select id="da-color">
+        <option value="#4ade80">Green</option>
+        <option value="#f0c060">Gold</option>
+        <option value="#7c9ef8">Blue</option>
+        <option value="#c084fc">Purple</option>
+        <option value="#f472b6">Pink</option>
+        <option value="#fb923c">Orange</option>
+        <option value="#67e8f9">Cyan</option>
+        <option value="#a3e635">Lime</option>
+        <option value="#f87171">Red</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-sm" onclick="closeModal('domain-add-modal')">CANCEL</button>
+      <button class="btn btn-primary btn-sm" onclick="saveDomainAdd()">ADD</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="domain-edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">EDIT DOMAIN</div>
+    <div class="modal-row"><div class="modal-lbl">NAME</div><input type="text" id="de-name" /></div>
+    <div class="modal-row"><div class="modal-lbl">RATING (0–100)</div><input type="number" id="de-val" min="0" max="100" /></div>
+    <div class="modal-row">
+      <div class="modal-lbl">COLOR</div>
+      <select id="de-color">
+        <option value="#4ade80">Green</option>
+        <option value="#f0c060">Gold</option>
+        <option value="#7c9ef8">Blue</option>
+        <option value="#c084fc">Purple</option>
+        <option value="#f472b6">Pink</option>
+        <option value="#fb923c">Orange</option>
+        <option value="#67e8f9">Cyan</option>
+        <option value="#a3e635">Lime</option>
+        <option value="#f87171">Red</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" onclick="deleteDomain()">DELETE</button>
+      <button class="btn btn-sm" onclick="closeModal('domain-edit-modal')">CANCEL</button>
+      <button class="btn btn-primary btn-sm" onclick="saveDomainEdit()">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEVEL UP -->
+<div class="levelup-bg" id="levelup-bg" onclick="this.classList.remove('open')">
+  <div class="levelup-box">
+    <div class="lu-eye">LEVEL UP</div>
+    <div class="lu-num" id="lu-num">2</div>
+    <div class="lu-rank" id="lu-rank">Apprentice</div>
+    <div class="lu-close">tap to continue</div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ═══════════════════════════════════
+// RANKS
+// ═══════════════════════════════════
+const RANKS = [
+  "Initiate","Apprentice","Scout","Contender","Operator",
+  "Tactician","Specialist","Strategist","Commander","Vanguard",
+  "Elite","Enforcer","Veteran","Architect","Sovereign",
+  "Apex","Phantom","Warlord","Legend","Ascendant"
+];
+function rankFor(lvl) {
+  if (lvl <= RANKS.length) return RANKS[lvl - 1];
+  const extra = Math.floor((lvl - RANKS.length - 1) / 3) + 2;
+  return "Legend " + toRoman(extra);
+}
+function toRoman(n) {
+  const v=[1000,900,500,400,100,90,50,40,10,9,5,4,1];
+  const s=["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
+  let r=""; v.forEach((x,i)=>{ while(n>=x){r+=s[i];n-=x;} }); return r;
+}
+
+// ═══════════════════════════════════
+// XP MATH
+// ═══════════════════════════════════
+function xpForLevel(lvl) {
+  if (lvl <= 1) return 0;
+  const base = G('baseXP', 300);
+  const curve = G('curve', 1.2);
+  const cap = G('capLevel', 100);
+  const effective = Math.min(lvl, cap);
+  return Math.round(base * Math.pow(curve, effective - 2));
+}
+function totalXPForLevel(lvl) {
+  let t = 0;
+  for (let i = 2; i <= lvl; i++) t += xpForLevel(i);
+  return t;
+}
+function levelFromXP(xp) {
+  let lvl = 1, acc = 0;
+  for (let i = 0; i < 99999; i++) {
+    const need = xpForLevel(lvl + 1);
+    if (acc + need > xp) break;
+    acc += need;
+    lvl++;
+  }
+  return lvl;
+}
+function xpProgress(xp) {
+  const lvl = levelFromXP(xp);
+  const floor = totalXPForLevel(lvl);
+  const need = xpForLevel(lvl + 1);
+  const cur = xp - floor;
+  const pct = need > 0 ? Math.min(cur / need * 100, 100) : 100;
+  return { lvl, cur, need, pct, left: need - cur };
+}
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+const KEY = 'devon_os_v5';
+const DEFAULTS = {
+  totalXP: 0, tokens: 0, totalDone: 0,
+  settings: { xp1:10, xp2:25, xp3:50, journalXP:10, perfectBonus:100, tokenRate:5, baseXP:300, curve:1.2, capLevel:100 },
+  colors: { bg:'#0e0f11', bg2:'#141518', bg3:'#1a1c20', border:'#2a2d35', border2:'#363a45', accent:'#e8f0fe', accent2:'#7c9ef8', accent3:'#4ade80', gold:'#f0c060', text:'#d8dce8', text2:'#9298b0', dim:'#52566a' },
+  layout: 'bottom',
+  tasks: [], nextTaskId: 1,
+  domains: [], nextDomainId: 1,
+  traits: [],
+  milestones: [], nextMsId: 1,
+  streaks: [], nextSkId: 1,
+  shop: [
+    { id:1, emoji:'🍫', name:'Chocolate Milk (2 glasses)', cost:15, minLevel:1, owned:false },
+    { id:2, emoji:'🍩', name:'Doughnut', cost:20, minLevel:1, owned:false },
+    { id:3, emoji:'🍪', name:'Cookie', cost:10, minLevel:1, owned:false },
+    { id:4, emoji:'🍕', name:'Cheat Meal', cost:60, minLevel:1, owned:false },
+    { id:5, emoji:'🎮', name:'2hr Gaming Session', cost:50, minLevel:1, owned:false },
+  ],
+  nextShopId: 6,
+  journal: [],
+};
+
+let S = {};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      S = JSON.parse(raw);
+      // Ensure all keys exist
+      Object.keys(DEFAULTS).forEach(k => {
+        if (S[k] === undefined) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k]));
+      });
+      if (!S.settings) S.settings = JSON.parse(JSON.stringify(DEFAULTS.settings));
+      Object.keys(DEFAULTS.settings).forEach(k => {
+        if (S.settings[k] === undefined) S.settings[k] = DEFAULTS.settings[k];
+      });
+    } else {
+      S = JSON.parse(JSON.stringify(DEFAULTS));
+    }
+  } catch(e) {
+    S = JSON.parse(JSON.stringify(DEFAULTS));
+  }
+}
+
+function saveState() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {}
+}
+
+// Safe settings getter
+function G(key, fallback) {
+  try { return (S && S.settings && S.settings[key] != null) ? S.settings[key] : fallback; }
+  catch(e) { return fallback; }
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function nav(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+  // Update nav buttons (both sidebar and bottom)
+  document.querySelectorAll('.nav-btn, .bot-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === pageId);
+  });
+  // Render page content
+  try {
+    const renders = {
+      dashboard: renderDashboard,
+      tasks: renderTasks,
+      character: renderCharacter,
+      milestones: renderMilestones,
+      streaks: renderStreaks,
+      shop: renderShop,
+      journal: renderJournal,
+      settings: renderSettings,
+    };
+    if (renders[pageId]) renders[pageId]();
+  } catch(e) {
+    console.error('render error', pageId, e);
+  }
+}
+
+// ═══════════════════════════════════
+// LAYOUT
+// ═══════════════════════════════════
+function setLayout(mode) {
+  S.layout = mode;
+  document.body.className = 'layout-' + mode;
+  document.getElementById('lo-bottom').classList.toggle('active', mode === 'bottom');
+  document.getElementById('lo-sidebar').classList.toggle('active', mode === 'sidebar');
+  saveState();
+}
+
+// ═══════════════════════════════════
+// STARS
+// ═══════════════════════════════════
+let selectedStars = 1;
+function setStar(n) {
+  selectedStars = n;
+  document.querySelectorAll('#star-sel button').forEach(b => {
+    b.classList.toggle('on', parseInt(b.dataset.s) <= n);
+  });
+}
+function starsDisplay(n) {
+  let s = '';
+  for (let i = 1; i <= 3; i++) s += `<span style="color:${i<=n?'var(--gold)':'var(--border2)'}">★</span>`;
+  return s;
+}
+function starXP(n) { return [0, G('xp1',10), G('xp2',25), G('xp3',50)][n] || 10; }
+function tokenEarn(xp) { return Math.max(1, Math.floor(xp / G('tokenRate', 5))); }
+
+// ═══════════════════════════════════
+// TASKS
+// ═══════════════════════════════════
+function addTask() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) return;
+  S.tasks.push({
+    id: S.nextTaskId++,
+    name,
+    cat: document.getElementById('t-cat').value,
+    stars: selectedStars,
+    done: false
+  });
+  document.getElementById('t-name').value = '';
+  setStar(1);
+  saveState(); renderTasks(); renderDashboard(); updateSidebar();
+}
+
+function toggleTask(id) {
+  const t = S.tasks.find(x => x.id === id);
+  if (!t) return;
+  const prevLvl = levelFromXP(S.totalXP);
+  const xp = starXP(t.stars);
+  const tok = tokenEarn(xp);
+  if (!t.done) {
+    t.done = true;
+    S.totalXP += xp;
+    S.tokens += tok;
+    S.totalDone++;
+    // Check perfect day
+    if (S.tasks.length > 0 && S.tasks.every(x => x.done)) {
+      const bonus = G('perfectBonus', 100);
+      S.totalXP += bonus;
+      S.tokens += tokenEarn(bonus);
+      toast('⭐ Perfect Day', 'All tasks done! +' + bonus + ' XP');
+    } else {
+      toast('✓ Done', t.name.slice(0,30) + ' · +' + xp + ' XP');
+    }
+  } else {
+    t.done = false;
+    S.totalXP = Math.max(0, S.totalXP - xp);
+    S.tokens = Math.max(0, S.tokens - tok);
+  }
+  const newLvl = levelFromXP(S.totalXP);
+  if (newLvl > prevLvl) showLevelUp(newLvl);
+  saveState(); renderTasks(); renderDashboard(); updateSidebar();
+}
+
+function deleteTask(id) {
+  S.tasks = S.tasks.filter(x => x.id !== id);
+  saveState(); renderTasks(); renderDashboard();
+}
+
+function resetDay() {
+  if (!confirm('Reset all tasks for a new day?')) return;
+  S.tasks.forEach(t => t.done = false);
+  saveState(); renderTasks(); renderDashboard();
+}
+
+function renderTasks() {
+  const ul = document.getElementById('task-list');
+  if (!ul) return;
+  const hint = document.getElementById('star-hint');
+  if (hint) hint.textContent = `★ = ${G('xp1',10)} XP  ·  ★★ = ${G('xp2',25)} XP  ·  ★★★ = ${G('xp3',50)} XP`;
+  if (!S.tasks.length) {
+    ul.innerHTML = '<li><div class="empty-state">No tasks yet — add one above</div></li>';
+    return;
+  }
+  ul.innerHTML = '';
+  S.tasks.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    li.innerHTML =
+      `<div class="task-cb${t.done?' done':''}" onclick="toggleTask(${t.id})"></div>` +
+      `<span class="task-name${t.done?' done':''}">${t.name}</span>` +
+      `<span class="cat-pill pill-${t.cat}">${t.cat.toUpperCase()}</span>` +
+      `<span class="task-stars">${starsDisplay(t.stars)}</span>` +
+      `<span class="task-xp">+${starXP(t.stars)}</span>` +
+      `<span class="task-del" onclick="deleteTask(${t.id})">✕</span>`;
+    ul.appendChild(li);
+  });
+}
+
+// ═══════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════
+function renderDashboard() {
+  const prog = xpProgress(S.totalXP);
+  document.getElementById('ds-level').textContent = prog.lvl;
+  document.getElementById('ds-tokens').textContent = S.tokens;
+  const done = S.tasks.filter(t => t.done).length;
+  const total = S.tasks.length;
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('ds-done').textContent = done;
+  const topStreak = S.streaks.length ? Math.max(...S.streaks.map(s => s.count)) : 0;
+  document.getElementById('ds-streak').textContent = topStreak;
+  document.getElementById('ds-pct').textContent = pct + '%';
+  document.getElementById('ds-taskcount').textContent = done + ' / ' + total + ' tasks';
+  document.getElementById('ds-prog').style.width = pct + '%';
+  document.getElementById('ds-xp-left').textContent = prog.left + ' XP';
+  document.getElementById('ds-xp-pct').textContent = Math.round(prog.pct) + '% to level ' + (prog.lvl + 1);
+  const now = new Date();
+  document.getElementById('dash-date').textContent =
+    now.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'}).toUpperCase();
+  // Domain bars
+  const dd = document.getElementById('dash-domains');
+  if (dd) {
+    if (!S.domains.length) {
+      dd.innerHTML = '<div class="empty-state">No domains — add them in Character</div>';
+    } else {
+      dd.innerHTML = '';
+      S.domains.forEach(d => {
+        const row = document.createElement('div');
+        row.className = 'domain-row';
+        row.innerHTML =
+          `<div class="domain-label">${d.name}</div>` +
+          `<div class="domain-track"><div class="domain-fill" style="width:${d.val}%;background:${d.color}"></div></div>` +
+          `<div class="domain-score">${d.val}</div>`;
+        dd.appendChild(row);
+      });
+    }
+  }
+}
+
+// ═══════════════════════════════════
+// CHARACTER
+// ═══════════════════════════════════
+let editingDomainId = null;
+
+function renderCharacter() {
+  const prog = xpProgress(S.totalXP);
+  document.getElementById('ch-rank').textContent = rankFor(prog.lvl);
+  document.getElementById('ch-xp-lbl').textContent = prog.cur + ' / ' + prog.need + ' XP';
+  document.getElementById('ch-xp-bar').style.width = prog.pct + '%';
+  document.getElementById('ch-total').textContent = S.totalXP;
+  document.getElementById('ch-tokens').textContent = S.tokens;
+  // Domains
+  const dl = document.getElementById('ch-domains');
+  if (!dl) return;
+  dl.innerHTML = '';
+  if (!S.domains.length) {
+    dl.innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:var(--dim);padding:8px 0">No domains yet — add one below</div>';
+  } else {
+    S.domains.forEach(d => {
+      const row = document.createElement('div');
+      row.className = 'domain-row';
+      row.innerHTML =
+        `<div class="domain-label">${d.name}</div>` +
+        `<div class="domain-track"><div class="domain-fill" style="width:${d.val}%;background:${d.color}"></div></div>` +
+        `<div class="domain-score">${d.val}</div>` +
+        `<button class="domain-edit-btn" onclick="openDomainEdit(${d.id})">EDIT</button>`;
+      dl.appendChild(row);
+    });
+  }
+  // Traits
+  const tl = document.getElementById('trait-list');
+  if (!tl) return;
+  tl.innerHTML = '';
+  if (!S.traits.length) {
+    tl.innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:var(--dim)">No traits yet — earn them</div>';
+  } else {
+    S.traits.forEach((tr, i) => {
+      const pill = document.createElement('div');
+      pill.className = 'trait-pill';
+      pill.innerHTML = `${tr}<span class="trait-del" onclick="deleteTrait(${i})">✕</span>`;
+      tl.appendChild(pill);
+    });
+  }
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function saveDomainAdd() {
+  const name = document.getElementById('da-name').value.trim().toUpperCase();
+  if (!name) return;
+  S.domains.push({
+    id: S.nextDomainId++,
+    name,
+    val: Math.min(100, Math.max(0, parseInt(document.getElementById('da-val').value) || 40)),
+    color: document.getElementById('da-color').value
+  });
+  document.getElementById('da-name').value = '';
+  closeModal('domain-add-modal');
+  saveState(); renderCharacter(); renderDashboard();
+  toast('Domain Added', name);
+}
+
+function openDomainEdit(id) {
+  const d = S.domains.find(x => x.id === id);
+  if (!d) return;
+  editingDomainId = id;
+  document.getElementById('de-name').value = d.name;
+  document.getElementById('de-val').value = d.val;
+  const sel = document.getElementById('de-color');
+  let matched = false;
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === d.color) { sel.selectedIndex = i; matched = true; break; }
+  }
+  if (!matched) sel.selectedIndex = 0;
+  openModal('domain-edit-modal');
+}
+
+function saveDomainEdit() {
+  const d = S.domains.find(x => x.id === editingDomainId);
+  if (!d) return;
+  d.name = document.getElementById('de-name').value.trim().toUpperCase() || d.name;
+  d.val = Math.min(100, Math.max(0, parseInt(document.getElementById('de-val').value) || 0));
+  d.color = document.getElementById('de-color').value;
+  closeModal('domain-edit-modal');
+  saveState(); renderCharacter(); renderDashboard();
+}
+
+function deleteDomain() {
+  if (!confirm('Remove this domain?')) return;
+  S.domains = S.domains.filter(x => x.id !== editingDomainId);
+  closeModal('domain-edit-modal');
+  saveState(); renderCharacter(); renderDashboard();
+}
+
+function addTrait() {
+  const val = document.getElementById('trait-input').value.trim();
+  if (!val) return;
+  S.traits.push(val);
+  document.getElementById('trait-input').value = '';
+  saveState(); renderCharacter();
+}
+
+function deleteTrait(i) {
+  S.traits.splice(i, 1);
+  saveState(); renderCharacter();
+}
+
+// ═══════════════════════════════════
+// MILESTONES
+// ═══════════════════════════════════
+function addMilestone() {
+  const title = document.getElementById('ms-title').value.trim();
+  if (!title) return;
+  S.milestones.push({
+    id: S.nextMsId++,
+    icon: document.getElementById('ms-icon').value || '🎯',
+    title,
+    desc: document.getElementById('ms-desc').value.trim(),
+    xp: parseInt(document.getElementById('ms-xp').value) || 100,
+    done: false
+  });
+  document.getElementById('ms-title').value = '';
+  document.getElementById('ms-desc').value = '';
+  document.getElementById('ms-icon').value = '';
+  saveState(); renderMilestones();
+}
+
+function toggleMilestone(id) {
+  const m = S.milestones.find(x => x.id === id);
+  if (!m) return;
+  const prevLvl = levelFromXP(S.totalXP);
+  if (!m.done) {
+    m.done = true;
+    S.totalXP += m.xp;
+    S.tokens += tokenEarn(m.xp);
+    toast('🏆 Milestone!', m.title + ' +' + m.xp + ' XP');
+    const newLvl = levelFromXP(S.totalXP);
+    if (newLvl > prevLvl) showLevelUp(newLvl);
+  } else {
+    m.done = false;
+    S.totalXP = Math.max(0, S.totalXP - m.xp);
+    S.tokens = Math.max(0, S.tokens - tokenEarn(m.xp));
+  }
+  saveState(); renderMilestones(); renderDashboard(); updateSidebar();
+}
+
+function deleteMilestone(id) {
+  S.milestones = S.milestones.filter(x => x.id !== id);
+  saveState(); renderMilestones();
+}
+
+function renderMilestones() {
+  const el = document.getElementById('ms-list');
+  if (!el) return;
+  if (!S.milestones.length) {
+    el.innerHTML = '<div class="empty-state">No milestones yet</div>';
+    return;
+  }
+  el.innerHTML = '';
+  S.milestones.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'ms-item';
+    div.innerHTML =
+      `<div class="ms-icon">${m.icon}</div>` +
+      `<div class="ms-info">` +
+        `<div class="ms-title${m.done?' done':''}">${m.title}</div>` +
+        `<div class="ms-desc">${m.desc}</div>` +
+      `</div>` +
+      `<div class="ms-xp">+${m.xp} XP</div>` +
+      `<div class="ms-check${m.done?' done':''}" onclick="toggleMilestone(${m.id})">${m.done?'✓':''}</div>` +
+      `<span class="ms-del" onclick="deleteMilestone(${m.id})">✕</span>`;
+    el.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════
+// STREAKS
+// ═══════════════════════════════════
+const STREAK_COLORS = ['#4ade80','#f0c060','#7c9ef8','#c084fc','#f472b6','#fb923c','#67e8f9','#a3e635'];
+
+function addStreak() {
+  const name = document.getElementById('sk-name').value.trim().toUpperCase();
+  if (!name) return;
+  S.streaks.push({ id: S.nextSkId++, icon: document.getElementById('sk-icon').value || '⚡', name, count: 0 });
+  document.getElementById('sk-name').value = '';
+  document.getElementById('sk-icon').value = '';
+  saveState(); renderStreaks();
+}
+
+function bumpStreak(id) {
+  const s = S.streaks.find(x => x.id === id);
+  if (!s) return;
+  s.count++;
+  const xp = Math.min(s.count * 2, 20);
+  S.totalXP += xp; S.tokens += 1;
+  toast(s.icon + ' ' + s.name, 'Day ' + s.count + ' · +' + xp + ' XP');
+  saveState(); renderStreaks(); updateSidebar(); renderDashboard();
+}
+
+function deleteStreak(id) {
+  if (!confirm('Delete this streak?')) return;
+  S.streaks = S.streaks.filter(x => x.id !== id);
+  saveState(); renderStreaks();
+}
+
+function renderStreaks() {
+  const grid = document.getElementById('streak-grid');
+  const empty = document.getElementById('streak-empty');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!S.streaks.length) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  S.streaks.forEach((s, i) => {
+    const col = STREAK_COLORS[i % STREAK_COLORS.length];
+    const card = document.createElement('div');
+    card.className = 'streak-card';
+    card.innerHTML =
+      `<span class="sk-del" onclick="event.stopPropagation();deleteStreak(${s.id})">✕</span>` +
+      `<div class="sk-icon">${s.icon}</div>` +
+      `<div class="sk-count" style="color:${col}">${s.count}</div>` +
+      `<div class="sk-name">${s.name}</div>`;
+    let holdTimer;
+    card.addEventListener('mousedown', () => { holdTimer = setTimeout(() => { if(confirm('Reset ' + s.name + '?')) { s.count=0; saveState(); renderStreaks(); } }, 700); });
+    card.addEventListener('touchstart', () => { holdTimer = setTimeout(() => { if(confirm('Reset ' + s.name + '?')) { s.count=0; saveState(); renderStreaks(); } }, 700); }, {passive:true});
+    card.addEventListener('mouseup', () => clearTimeout(holdTimer));
+    card.addEventListener('touchend', () => clearTimeout(holdTimer));
+    card.addEventListener('click', () => bumpStreak(s.id));
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════
+// SHOP
+// ═══════════════════════════════════
+function addShopItem() {
+  const name = document.getElementById('sh-name').value.trim();
+  if (!name) return;
+  S.shop.push({
+    id: S.nextShopId++,
+    emoji: document.getElementById('sh-emoji').value || '🎁',
+    name,
+    cost: parseInt(document.getElementById('sh-cost').value) || 20,
+    minLevel: parseInt(document.getElementById('sh-lvl').value) || 1,
+    owned: false
+  });
+  document.getElementById('sh-name').value = '';
+  document.getElementById('sh-emoji').value = '';
+  saveState(); renderShop();
+}
+
+function buyItem(id) {
+  const item = S.shop.find(x => x.id === id);
+  const lvl = levelFromXP(S.totalXP);
+  if (!item || item.owned || S.tokens < item.cost || lvl < item.minLevel) return;
+  S.tokens -= item.cost;
+  item.owned = true;
+  toast('✓ Redeemed', item.name + ' — enjoy it');
+  saveState(); renderShop(); updateSidebar(); renderDashboard();
+}
+
+function deleteShopItem(id) {
+  S.shop = S.shop.filter(x => x.id !== id);
+  saveState(); renderShop();
+}
+
+function renderShop() {
+  const sub = document.getElementById('shop-sub');
+  if (sub) sub.textContent = S.tokens + ' TOKENS AVAILABLE';
+  const grid = document.getElementById('shop-grid');
+  const empty = document.getElementById('shop-empty');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!S.shop.length) { if(empty) empty.style.display='block'; return; }
+  if (empty) empty.style.display = 'none';
+  const lvl = levelFromXP(S.totalXP);
+  S.shop.forEach(item => {
+    const locked = lvl < item.minLevel;
+    const canBuy = !locked && !item.owned && S.tokens >= item.cost;
+    const card = document.createElement('div');
+    card.className = 'shop-card' + (locked?' locked':'') + (item.owned?' owned':'') + (canBuy?' can-buy':'');
+    card.innerHTML =
+      `<span class="shop-del" onclick="event.stopPropagation();deleteShopItem(${item.id})">✕</span>` +
+      `<div class="shop-emoji">${item.emoji}</div>` +
+      `<div class="shop-name">${item.name}</div>` +
+      `<div class="shop-cost">${item.owned ? '✓ USED' : '⬡ ' + item.cost}</div>` +
+      `<div class="shop-status" style="color:${item.owned?'var(--green)':locked?'var(--dim)':canBuy?'var(--green)':'var(--red)'}">` +
+        (item.owned ? 'REDEEMED' : locked ? 'LVL ' + item.minLevel + ' REQ' : canBuy ? 'BUY' : 'NEED TOKENS') +
+      `</div>`;
+    if (canBuy) card.onclick = () => buyItem(item.id);
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════
+// JOURNAL
+// ═══════════════════════════════════
+function addJournal() {
+  const text = document.getElementById('j-input').value.trim();
+  if (!text) return;
+  const now = new Date();
+  const xp = G('journalXP', 10);
+  S.journal.unshift({
+    id: Date.now(), text,
+    date: now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) +
+          ' · ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+  });
+  S.totalXP += xp; S.tokens += 1; S.totalDone++;
+  document.getElementById('j-input').value = '';
+  toast('Logged', '+' + xp + ' XP');
+  saveState(); renderJournal(); updateSidebar(); renderDashboard();
+}
+
+function deleteJournal(id) {
+  S.journal = S.journal.filter(x => x.id !== id);
+  saveState(); renderJournal();
+}
+
+function renderJournal() {
+  const sub = document.getElementById('journal-sub');
+  if (sub) sub.textContent = 'DAILY LOG · +' + G('journalXP',10) + ' XP PER ENTRY';
+  const el = document.getElementById('journal-list');
+  if (!el) return;
+  el.innerHTML = '';
+  if (!S.journal.length) { el.innerHTML = '<div class="empty-state">No entries yet</div>'; return; }
+  S.journal.slice(0, 30).forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'journal-entry';
+    div.innerHTML =
+      `<div class="je-meta"><span>${e.date}</span><span class="je-del" onclick="deleteJournal(${e.id})">✕ delete</span></div>` +
+      `<div class="je-text">${e.text}</div>`;
+    el.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════
+const PRESETS = {
+  'Default':  { bg:'#0e0f11', bg2:'#141518', bg3:'#1a1c20', border:'#2a2d35', border2:'#363a45', accent:'#e8f0fe', accent2:'#7c9ef8', accent3:'#4ade80', gold:'#f0c060', text:'#d8dce8', text2:'#9298b0', dim:'#52566a' },
+  'Obsidian': { bg:'#000000', bg2:'#0a0a0a', bg3:'#111111', border:'#222222', border2:'#333333', accent:'#ffffff', accent2:'#d4af37', accent3:'#d4af37', gold:'#d4af37', text:'#eeeeee', text2:'#aaaaaa', dim:'#555555' },
+  'Navy':     { bg:'#05070f', bg2:'#090c1c', bg3:'#0e1228', border:'#1a2040', border2:'#253060', accent:'#e8f0ff', accent2:'#6090ff', accent3:'#50d890', gold:'#ffd060', text:'#d0dcff', text2:'#8090bb', dim:'#3a4870' },
+  'Forest':   { bg:'#040a06', bg2:'#07100a', bg3:'#0c180f', border:'#152018', border2:'#1e3022', accent:'#e8f5ec', accent2:'#50c870', accent3:'#80e890', gold:'#c8b040', text:'#c8e8d0', text2:'#7aaa88', dim:'#3a5a42' },
+  'Slate':    { bg:'#0c0e14', bg2:'#13151e', bg3:'#191c28', border:'#252a38', border2:'#323848', accent:'#f0f2ff', accent2:'#9090c0', accent3:'#70d0b0', gold:'#d0b060', text:'#ccd0e0', text2:'#8890a8', dim:'#4a5068' },
+};
+
+const COLOR_DEFS = [
+  { key:'bg',      label:'Background',    sub:'Main page background' },
+  { key:'bg2',     label:'Surface',       sub:'Cards and panels' },
+  { key:'bg3',     label:'Surface 2',     sub:'Inputs and inner areas' },
+  { key:'border',  label:'Border',        sub:'Main borders' },
+  { key:'border2', label:'Border 2',      sub:'Input borders' },
+  { key:'accent',  label:'Accent Light',  sub:'Bright accent text' },
+  { key:'accent2', label:'Accent',        sub:'Primary accent color' },
+  { key:'accent3', label:'Accent Alt',    sub:'Secondary accent' },
+  { key:'gold',    label:'Gold',          sub:'XP and token color' },
+  { key:'text',    label:'Text',          sub:'Primary text' },
+  { key:'text2',   label:'Text 2',        sub:'Secondary text' },
+  { key:'dim',     label:'Dim',           sub:'Placeholder / hint text' },
+];
+
+function renderSettings() {
+  // Layout
+  document.getElementById('lo-bottom').classList.toggle('active', S.layout !== 'sidebar');
+  document.getElementById('lo-sidebar').classList.toggle('active', S.layout === 'sidebar');
+  // Sliders
+  const sliders = [
+    ['xp1-r','xp1-v','xp1',10,''],
+    ['xp2-r','xp2-v','xp2',25,''],
+    ['xp3-r','xp3-v','xp3',50,''],
+    ['jxp-r','jxp-v','journalXP',10,''],
+    ['pday-r','pday-v','perfectBonus',100,''],
+    ['tok-r','tok-v','tokenRate',5,'1:'],
+    ['base-r','base-v','baseXP',300,''],
+    ['curve-r','curve-v','curve',1.2,'×'],
+    ['cap-r','cap-v','capLevel',100,''],
+  ];
+  sliders.forEach(([rid,vid,key,fb,pre]) => {
+    const r = document.getElementById(rid);
+    const v = document.getElementById(vid);
+    const val = G(key, fb);
+    if (r) r.value = val;
+    if (v) v.textContent = pre === '1:' ? '1:' + val : pre === '×' ? val + '×' : val;
+  });
+  updateCurvePreview();
+  // Presets
+  const pr = document.getElementById('preset-row');
+  if (pr) {
+    pr.innerHTML = '';
+    Object.keys(PRESETS).forEach(name => {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn';
+      btn.textContent = name.toUpperCase();
+      btn.onclick = () => applyPreset(name);
+      pr.appendChild(btn);
+    });
+  }
+  // Color pickers
+  const cp = document.getElementById('color-pickers');
+  if (cp) {
+    cp.innerHTML = '';
+    COLOR_DEFS.forEach(def => {
+      const currentVal = (S.colors && S.colors[def.key]) || '#888888';
+      const row = document.createElement('div');
+      row.className = 'color-row';
+      row.innerHTML =
+        `<div class="color-info"><div class="color-label">${def.label}</div><div class="color-sub">${def.sub}</div></div>` +
+        `<div class="color-swatch" id="sw-${def.key}" style="background:${currentVal}"></div>` +
+        `<input type="color" value="${currentVal}" onchange="applyColor('${def.key}',this.value)">`;
+      cp.appendChild(row);
+    });
+  }
+}
+
+function setSetting(key, val) {
+  if (!S.settings) S.settings = {};
+  S.settings[key] = val;
+  // Update display value
+  const map = { xp1:'xp1-v', xp2:'xp2-v', xp3:'xp3-v', journalXP:'jxp-v', perfectBonus:'pday-v', tokenRate:'tok-v', baseXP:'base-v', curve:'curve-v', capLevel:'cap-v' };
+  const vid = map[key];
+  if (vid) {
+    const el = document.getElementById(vid);
+    if (el) {
+      if (key === 'curve') el.textContent = val + '×';
+      else if (key === 'tokenRate') el.textContent = '1:' + val;
+      else el.textContent = val;
+    }
+  }
+  if (key === 'baseXP' || key === 'curve' || key === 'capLevel') updateCurvePreview();
+  const hint = document.getElementById('star-hint');
+  if (hint) hint.textContent = `★ = ${G('xp1',10)} XP  ·  ★★ = ${G('xp2',25)} XP  ·  ★★★ = ${G('xp3',50)} XP`;
+  saveState();
+}
+
+function updateCurvePreview() {
+  const el = document.getElementById('curve-preview');
+  if (!el) return;
+  el.innerHTML = '';
+  for (let lvl = 2; lvl <= 11; lvl++) {
+    const xp = xpForLevel(lvl);
+    const div = document.createElement('div');
+    div.className = 'cp-item';
+    div.innerHTML = `<div class="cp-lvl">LVL ${lvl}</div><div class="cp-xp">${xp}</div>`;
+    el.appendChild(div);
+  }
+}
+
+function applyColor(key, hex) {
+  if (!S.colors) S.colors = {};
+  S.colors[key] = hex;
+  document.documentElement.style.setProperty('--' + key, hex);
+  const sw = document.getElementById('sw-' + key);
+  if (sw) sw.style.background = hex;
+  saveState();
+}
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  if (!S.colors) S.colors = {};
+  Object.entries(p).forEach(([key, val]) => {
+    S.colors[key] = val;
+    document.documentElement.style.setProperty('--' + key, val);
+  });
+  saveState();
+  renderSettings();
+  toast('Theme Applied', name);
+}
+
+function applyStoredColors() {
+  if (!S.colors) return;
+  Object.entries(S.colors).forEach(([key, val]) => {
+    document.documentElement.style.setProperty('--' + key, val);
+  });
+}
+
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+function exportData() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'devon-os-backup.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Exported', 'Data downloaded');
+}
+
+function resetAll() {
+  if (!confirm('Reset ALL data? This cannot be undone.')) return;
+  localStorage.removeItem(KEY);
+  S = JSON.parse(JSON.stringify(DEFAULTS));
+  saveState();
+  applyStoredColors();
+  document.body.className = 'layout-' + S.layout;
+  nav('dashboard');
+  toast('Reset', 'Starting fresh');
+}
+
+// ═══════════════════════════════════
+// SIDEBAR XP CARD
+// ═══════════════════════════════════
+function updateSidebar() {
+  const prog = xpProgress(S.totalXP);
+  const snLvl = document.getElementById('sn-lvl');
+  const snRank = document.getElementById('sn-rank');
+  const snBar = document.getElementById('sn-bar');
+  const snCur = document.getElementById('sn-cur');
+  const snNxt = document.getElementById('sn-nxt');
+  if (snLvl) snLvl.textContent = 'LEVEL ' + prog.lvl;
+  if (snRank) snRank.textContent = rankFor(prog.lvl);
+  if (snBar) snBar.style.width = prog.pct + '%';
+  if (snCur) snCur.textContent = prog.cur + ' XP';
+  if (snNxt) snNxt.textContent = prog.left + ' to next';
+}
+
+// ═══════════════════════════════════
+// LEVEL UP
+// ═══════════════════════════════════
+function showLevelUp(lvl) {
+  document.getElementById('lu-num').textContent = lvl;
+  document.getElementById('lu-rank').textContent = rankFor(lvl);
+  document.getElementById('levelup-bg').classList.add('open');
+}
+
+// ═══════════════════════════════════
+// TOAST
+// ═══════════════════════════════════
+function toast(title, body) {
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<div class="toast-ttl">${title}</div>${body}`;
+  wrap.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('in'));
+  setTimeout(() => {
+    el.classList.remove('in');
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+loadState();
+document.body.className = 'layout-' + (S.layout || 'bottom');
+applyStoredColors();
+updateSidebar();
+renderDashboard();
+</script>
+</body>
+</html>
